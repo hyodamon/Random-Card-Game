@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="KR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="main.css" />
+  <link rel="icon" href="img\joker.ico" />
+  <script src="https://kit.fontawesome.com/c5d2569384.js" crossorigin="anonymous"></script>
+  <title>RandomCardGame</title>
+</head>
+
+<body>
+  <div id="container">
+    <header>
+      <div id="title">랜덤 카드 배열</div>
+      <div id="startBtn" onclick="GameStart()">
+        <i class="far fa-play-circle"></i>
+      </div>
+    </header>
+    <div id="screen"></div>
+    <div id="main">
+      <div id="timerBox">00 : 00 : 00</div>
+
+      <div id="blackSpace">
+        <div id="blank1" class="blank" ondrop="drop(event, this)" ondragover="dragOver(event)"></div>
+        <div id="blank2" class="blank" ondrop="drop(event, this)" ondragover="dragOver(event)"></div>
+        <div id="blank3" class="blank" ondrop="drop(event, this)" ondragover="dragOver(event)"></div>
+        <div id="blank4" class="blank" ondrop="drop(event, this)" ondragover="dragOver(event)"></div>
+        <div id="blank5" class="blank" ondrop="drop(event, this)" ondragover="dragOver(event)"></div>
+        <div id="blank6" class="blank" ondrop="drop(event, this)" ondragover="dragOver(event)"></div>
+        <div id="blank7" class="blank" ondrop="drop(event, this)" ondragover="dragOver(event)"></div>
+        <div id="blank8" class="blank" ondrop="drop(event, this)" ondragover="dragOver(event)"></div>
+        <div id="blank9" class="blank" ondrop="drop(event, this)" ondragover="dragOver(event)"></div>
+      </div>
+
+      <div id="cardSpace">
+        <div id="cardBox1" class="cardBox" ondrop="drop(event, this)" ondragover="dragOver(event)"><img src="img/back.png" draggable="true" ondragstart="drag(event)" id="card1" /></div>
+        <div id="cardBox2" class="cardBox" ondrop="drop(event, this)" ondragover="dragOver(event)"><img src="img/back.png" draggable="true" ondragstart="drag(event)" id="card2" /></div>
+        <div id="cardBox3" class="cardBox" ondrop="drop(event, this)" ondragover="dragOver(event)"><img src="img/back.png" draggable="true" ondragstart="drag(event)" id="card3" /></div>
+        <div id="cardBox4" class="cardBox" ondrop="drop(event, this)" ondragover="dragOver(event)"><img src="img/back.png" draggable="true" ondragstart="drag(event)" id="card4" /></div>
+        <div id="cardBox5" class="cardBox" ondrop="drop(event, this)" ondragover="dragOver(event)"><img src="img/back.png" draggable="true" ondragstart="drag(event)" id="card5" /></div>
+        <div id="cardBox6" class="cardBox" ondrop="drop(event, this)" ondragover="dragOver(event)"><img src="img/back.png" draggable="true" ondragstart="drag(event)" id="card6" /></div>
+        <div id="cardBox7" class="cardBox" ondrop="drop(event, this)" ondragover="dragOver(event)"><img src="img/back.png" draggable="true" ondragstart="drag(event)" id="card7" /></div>
+        <div id="cardBox8" class="cardBox" ondrop="drop(event, this)" ondragover="dragOver(event)"><img src="img/back.png" draggable="true" ondragstart="drag(event)" id="card8" /></div>
+        <div id="cardBox9" class="cardBox" ondrop="drop(event, this)" ondragover="dragOver(event)"><img src="img/back.png" draggable="true" ondragstart="drag(event)" id="card9" /></div>
+      </div>
+    </div>
+  </div>
+</body>
+<script>
+  var startCnt = 0;
+  var score = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+  var time, tmpTime;
+
+  window.onload = function () {
+    beforeGameStart();
+  };
+
+  function beforeGameStart() {
+    var box = document.createElement("div");
+    box.id = "msgBox";
+    box.style.display = "block";
+    box.style.opacity = "0.95";
+
+    var text = document.createElement("div");
+    text.id = "text";
+    text.innerText = "게임 시작 버튼을 눌러주세요.";
+
+    box.appendChild(text);
+
+    var contents = document.getElementById("container");
+    contents.appendChild(box);
+
+    document.getElementById("screen").style.display = "block";
+
+    document
+      .getElementById("startBtn")
+      .addEventListener("click", function () {
+        contents.removeChild(box);
+        document.getElementById("screen").style.display = "none";
+      });
+  }
+
+  function GameStart() {
+    // 게임 시작 시 startCnt가 1이 더해지고 shuffleEvent() 실행
+    if (startCnt == 0) {
+      startCnt++;
+      timerEvent();
+      shuffleEvent();
+      var audio = new Audio("audio/cardSlide8.mp3");
+      audio.play();
+    }
+  }
+
+  function timerEvent() {
+    var clickedTime = new Date().getTime();
+
+    time = setInterval(function () {
+      var nowTime = new Date().getTime(); // 현재의 시간
+      var newTime = new Date(nowTime - clickedTime); // 현재의 시간 - 입력한 시간
+      var min = newTime.getMinutes(); // 분
+      var sec = newTime.getSeconds(); // 초
+      var millisec = Math.ceil(newTime.getMilliseconds() / 10);
+      tmpTime =
+        addZero(min) + " : " + addZero(sec) + " : " + addZero(millisec);
+      document.getElementById("timerBox").innerText = tmpTime;
+    }, 1);
+  }
+
+  function stopTimerEvent() {
+    clearInterval(time);
+  }
+
+  function addZero(num) {
+    return num < 10 ? "0" + num : "" + num; // ? 를 기준으로 동작하는 조건문 (삼항)
+  }
+  function shuffleEvent() {
+    for (var i = 1; i <= 9; i++) {
+      var cardBox = document.getElementById("cardBox" + String(i));
+      cardBox.firstChild.src = "img/"+String(i)+".png";
+      var cardSpace = cardBox.parentNode;
+      cardSpace.insertBefore(
+        cardBox,
+        cardSpace.childNodes[Math.floor(Math.random() * 10)]  
+      );
+    }
+  }
+
+  function drag(e) {
+    var audio = new Audio("audio/cardPlace1.mp3");
+    audio.play();
+    e.dataTransfer.setData("img", e.target.id); // 주는 박스 안 이미지
+    e.dataTransfer.setData("Box", e.target.parentNode.id); // 주는 박스
+  }
+
+  function dragOver(e) {
+    e.preventDefault();
+  }
+
+  function drop(e, el) {
+    // 안에 img가 있다면?
+    var audio = new Audio("audio/cardPlace2.mp3");
+    audio.play();
+
+    var data = e.dataTransfer.getData("img"); // "card4"
+    var Box = document.getElementById(e.dataTransfer.getData("Box"));
+    var cardNum = data.substring(4, 5);
+    
+    if (el.children.length == 0) {
+      el.appendChild(document.getElementById(data));
+    } 
+    
+    else if (el.childNodes[0] != Box.childNodes[0]) { // 넣으려고 하는 곳이 비어있다면?
+      var tmp1, tmp2;
+      tmp1 = el.childNodes[0];
+      tmp2 = Box.childNodes[0];
+      el.removeChild(el.childNodes[0]);
+      Box.removeChild(Box.childNodes[0]);
+      el.appendChild(tmp2);
+      Box.appendChild(tmp1); 
+    }
+    successEvent();
+  }
+
+  function successEvent() {
+    var box = document.getElementsByClassName("blank");
+
+    for(var i = 0; i<9;i++ ) {
+      if(box[i].firstChild != null) {
+        if(box[i].firstChild.id.substring(4,5) == box[i].id.substring(5,6)) {
+          score[i] = 1;
+        }
+        else {
+          score[i] = 0;
+        }
+      }
+      else {
+          score[i] = 0;
+      }
+    }
+    if (score.indexOf(0) == -1) {
+      stopTimerEvent();
+      printMsgBox("Success!\n" + tmpTime);
+    }
+  }
+
+  function addScore(box, cardNum) {
+    console.log(box.id);
+    if (box.id[0] == 'b') {
+      if(box.id.substring(5, 6) == cardNum) {
+        score[box.id.substring(5, 6)-1] = 1;
+      }
+      else if(box.id.substring(5, 6) != cardNum) {
+        score[box.id.substring(5, 6)-1] = 0;
+      }
+    }
+    console.log(score);
+  }
+
+  function printMsgBox(str) {
+    var box = document.createElement("div");
+    box.id = "msgBox";
+    box.style.display = "block";
+    box.style.opacity = "0.95";
+    box.style.transition = "all 1s ease";
+
+    var text = document.createElement("div");
+    text.id = "text";
+    text.innerText = str;
+
+    var x = document.createElement("div");
+    x.style.cursor = "pointer";
+    x.id = "x";
+    x.innerHTML = "<i class='fas fa-times'></i>";
+    x.addEventListener("click", function () {
+      window.location.reload();
+    });
+    box.appendChild(text);
+    box.appendChild(x);
+
+    var contents = document.getElementById("container");
+    contents.appendChild(box);
+
+    document.getElementById("screen").style.display = "block";
+  }
+</script>
+
+</html>
